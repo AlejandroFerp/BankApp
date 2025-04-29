@@ -3,29 +3,36 @@ package com.banco;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Pruebas avanzadas con Mockito.
+ * @class BancoServiceAdvancedTest
+ * @brief Pruebas avanzadas con Mockito para validar el comportamiento del servicio bancario.
  */
 @ExtendWith(MockitoExtension.class)
 public class BancoServiceAdvancedTest {
 
     @Mock
     private RepositorioBanco repo;
+    /// < Mock del repositorio de banco.
 
     @Spy
     private BancoService bancoServiceSpy;
+    /// < Espía de la clase BancoService para monitorear interacciones parciales.
 
     @InjectMocks
-    private BancoService bancoService;
+    private BancoService bancoService; ///< Instancia de BancoService con inyección de dependencias simuladas.
 
+    /**
+     * @brief Prueba que verifica el orden de las llamadas a métodos.
+     */
     @Test
     public void testVerificacionOrden() {
         when(repo.obtenerSaldo("cuenta1")).thenReturn(100.0);
@@ -37,6 +44,9 @@ public class BancoServiceAdvancedTest {
         verifyNoMoreInteractions(repo);
     }
 
+    /**
+     * @brief Prueba que valida retornos múltiples de un método simulado.
+     */
     @Test
     public void testRetornosMultiples() {
         when(repo.obtenerSaldo("cuenta1"))
@@ -52,6 +62,9 @@ public class BancoServiceAdvancedTest {
         verify(repo, times(3)).actualizarSaldo(anyString(), anyDouble());
     }
 
+    /**
+     * @brief Prueba que verifica el manejo de excepciones al fallar el repositorio.
+     */
     @Test
     public void testExcepcionRepositorio() {
         doThrow(new RuntimeException("Error en BD"))
@@ -65,6 +78,9 @@ public class BancoServiceAdvancedTest {
         verify(repo).actualizarSaldo(anyString(), anyDouble());
     }
 
+    /**
+     * @brief Prueba que combina el uso de espía y simulaciones dentro del servicio bancario.
+     */
     @Test
     public void testSpyCombinado() {
         BancoService spyService = spy(new BancoService(repo));
